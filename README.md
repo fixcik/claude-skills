@@ -6,6 +6,10 @@ A centralized marketplace for [Claude Code](https://claude.ai/code) skills with 
 
 Claude Code skills are specialized prompts that extend Claude's capabilities with domain-specific knowledge, workflows, and tool integrations. They help Claude provide more focused and effective assistance for specific tasks.
 
+**Works with:** [Claude Code](https://claude.ai/code) CLI and [Cursor](https://cursor.sh/) IDE
+
+📖 **Using skills in Cursor?** See [CURSOR.md](./CURSOR.md) for Cursor-specific instructions.
+
 ## Installation
 
 ### Prerequisites
