@@ -1,0 +1,38 @@
+[
+  {
+    "id": "swarm-service-plugins/etc/swarm-services/application-template-service/main.py:51-54",
+    "type": "nitpick",
+    "status": "skip",
+    "note": "Placeholder replacement is controlled - using specific formats is intentional"
+  },
+  {
+    "id": "swarm-service-plugins/etc/swarm-services/application-template-service/main.py:102-110",
+    "type": "nitpick",
+    "status": "later",
+    "note": "Consider adding timeouts in follow-up PR"
+  },
+  {
+    "id": "swarm-service-plugins/etc/swarm-services/application-template-service/main.py:147-166",
+    "type": "nitpick",
+    "status": "skip",
+    "note": "Silent failures are intentional - best-effort cleanup"
+  },
+  {
+    "id": "apps/application-template-service/test/helpers/template-builder.ts:29-37",
+    "type": "nitpick",
+    "status": "skip",
+    "note": "Non-strict typing is acceptable for test helpers"
+  },
+  {
+    "id": "apps/application-template-service/src/main.ts:12-16",
+    "type": "nitpick",
+    "status": "later",
+    "note": "Double initialization optimization can be done in refactoring PR"
+  },
+  {
+    "id": "apps/application-template-service/src/main.ts:29-34",
+    "type": "nitpick",
+    "status": "skip",
+    "note": "Graceful shutdown will be added in next phase"
+  }
+]

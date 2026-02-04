@@ -1,0 +1,28 @@
+[
+  {
+    "threadId": "MDEyOlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudFRocmVhZDEyMzQ1Ng==",
+    "reply": "Thanks for the feedback! We've updated ApplicationTemplateIdSchema to use ObjectIdParamSchema for consistency with AssetIdSchema.",
+    "resolve": true,
+    "status": "done",
+    "note": "Fixed in commit abc123"
+  },
+  {
+    "threadId": "MDEyOlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudFRocmVhZDc4OTAxMg==",
+    "reply": "We'll address this in a follow-up PR as it's outside the scope of SP-7390.",
+    "resolve": false,
+    "status": "skip",
+    "note": "Out of scope for this PR"
+  },
+  {
+    "threadId": "MDEyOlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudFRocmVhZDM0NTY3OA==",
+    "reply": "Good catch! We've added health check support using @nestjs/terminus.",
+    "resolve": true,
+    "status": "done"
+  },
+  {
+    "nitpickId": "swarm-service-plugins/main.py:51-54",
+    "reply": "Regex pattern added for flexible placeholder matching.",
+    "status": "done",
+    "note": "Nitpick resolved"
+  }
+]

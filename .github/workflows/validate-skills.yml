@@ -1,0 +1,146 @@
+name: Validate Skills
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'registry.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills/**'
+      - 'registry.json'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Validate registry.json
+        run: |
+          echo "Validating registry.json..."
+          jq empty registry.json || {
+            echo "❌ registry.json is not valid JSON"
+            exit 1
+          }
+          echo "✅ registry.json is valid JSON"
+
+      - name: Validate skill frontmatter
+        run: |
+          echo "Validating SKILL.md frontmatter..."
+
+          errors=0
+
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            skill_file="${skill_dir}SKILL.md"
+
+            if [[ ! -f "$skill_file" ]]; then
+              echo "❌ Missing SKILL.md in $skill_name"
+              errors=$((errors + 1))
+              continue
+            fi
+
+            # Extract frontmatter
+            if ! grep -q "^---$" "$skill_file"; then
+              echo "❌ $skill_name: Missing frontmatter delimiters"
+              errors=$((errors + 1))
+              continue
+            fi
+
+            # Check for required fields
+            frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed '1d;$d')
+
+            # Validate name field
+            if ! echo "$frontmatter" | grep -q "^name:"; then
+              echo "❌ $skill_name: Missing 'name' field in frontmatter"
+              errors=$((errors + 1))
+            else
+              fm_name=$(echo "$frontmatter" | grep "^name:" | sed 's/name: *//')
+              if [[ "$fm_name" != "$skill_name" ]]; then
+                echo "❌ $skill_name: Frontmatter name '$fm_name' doesn't match directory name"
+                errors=$((errors + 1))
+              fi
+            fi
+
+            # Validate description field
+            if ! echo "$frontmatter" | grep -q "^description:"; then
+              echo "❌ $skill_name: Missing 'description' field in frontmatter"
+              errors=$((errors + 1))
+            else
+              description=$(echo "$frontmatter" | grep "^description:" | sed 's/description: *//')
+              if ! echo "$description" | grep -qi "use when"; then
+                echo "⚠️  $skill_name: Description should start with 'Use when...'"
+                # Warning only, not an error
+              fi
+            fi
+
+            echo "✅ $skill_name: Frontmatter is valid"
+          done
+
+          if [[ $errors -gt 0 ]]; then
+            echo ""
+            echo "❌ Validation failed with $errors error(s)"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All skills validated successfully"
+
+      - name: Check registry consistency
+        run: |
+          echo "Checking registry consistency..."
+
+          errors=0
+
+          # Check that all builtin skills in registry exist
+          jq -r '.skills | keys[]' registry.json | while read -r skill_name; do
+            if [[ ! -d "skills/$skill_name" ]]; then
+              echo "❌ registry.json references '$skill_name' but directory doesn't exist"
+              errors=$((errors + 1))
+            fi
+          done
+
+          # Check that all skill directories are in registry
+          for skill_dir in skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            if ! jq -e ".skills[\"$skill_name\"]" registry.json >/dev/null 2>&1; then
+              echo "❌ Skill directory '$skill_name' exists but not in registry.json"
+              errors=$((errors + 1))
+            fi
+          done
+
+          if [[ $errors -gt 0 ]]; then
+            echo ""
+            echo "❌ Registry consistency check failed"
+            exit 1
+          fi
+
+          echo "✅ Registry is consistent with skill directories"
+
+      - name: Test installation
+        run: |
+          echo "Testing skill installation..."
+
+          # Make gh-skills executable
+          chmod +x gh-skills
+
+          # Test help command
+          ./gh-skills help
+
+          # Test search command
+          ./gh-skills search
+
+          # Test info command for first skill
+          first_skill=$(jq -r '.skills | keys[0]' registry.json)
+          if [[ -n "$first_skill" ]]; then
+            ./gh-skills info "$first_skill"
+          fi
+
+          echo "✅ gh-skills commands work correctly"
