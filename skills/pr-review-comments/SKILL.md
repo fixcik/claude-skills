@@ -88,18 +88,18 @@ npx gh-pr-threads --only=threads --ignore-bots
 2. **Analyze validity** - Is the comment correct?
 3. **If needs fix:**
    - Apply fix
-   - Draft reply in same language as comment
+   - Draft **meaningful reply** explaining what was changed
    - Get user confirmation
    - Send reply and resolve:
      ```bash
-     npx gh-pr-threads resolve <id> --reply "Fixed. Changed X to Y as suggested."
+     npx gh-pr-threads resolve <id> --reply "Your detailed explanation of changes"
      ```
 4. **If already fixed:**
-   - Draft reply confirming fix
+   - Draft reply confirming fix with specifics
    - Get user confirmation
    - Send and resolve:
      ```bash
-     npx gh-pr-threads resolve <id> --reply "Already fixed in commit abc123"
+     npx gh-pr-threads resolve <id> --reply "Your explanation of existing fix"
      ```
 5. **If unclear/invalid:**
    - Ask user for clarification
@@ -137,12 +137,17 @@ Comment: "<original comment text>"
 
 Status: [Fixed/Already fixed/Needs discussion]
 
-Proposed reply: "<your reply in same language as comment>"
+Proposed reply: "<meaningful explanation of what was done, in same language>"
+
+Example: "Changed validation logic to check for null values before
+processing, as suggested. The issue is now fixed."
 
 Actions:
 [ ] Apply code changes (if needed)
 [ ] Send reply: npx gh-pr-threads resolve <id> --reply "..."
 ```
+
+**IMPORTANT:** Reply must explain what was actually done, not generic text.
 
 ## Key Rules
 
@@ -165,12 +170,14 @@ npx gh-pr-threads mark <id> done
 
 **Bot suggestion fixed:**
 ```bash
-npx gh-pr-threads resolve <id> --reply "Applied suggestion"
+# Explain WHAT was changed, not just "applied suggestion"
+npx gh-pr-threads resolve <id> --reply "Added type annotation to makeRequest function parameters"
 ```
 
 **User comment fixed:**
 ```bash
-npx gh-pr-threads resolve <id> --reply "Fixed. Changed implementation as suggested."
+# Describe the actual change made
+npx gh-pr-threads resolve <id> --reply "Refactored error handling to throw custom exceptions instead of returning error codes, as suggested"
 ```
 
 **Need clarification:**
