@@ -66,14 +66,21 @@ npx gh-pr-threads --only=threads
 
 **Flow:**
 1. **Analyze carefully** - Bot suggestions may be incorrect
-2. **If invalid** → Explain why to user, mark as skip
+2. **If invalid:**
+   - Explain to user why suggestion is incorrect
+   - Reply explaining the reasoning:
+     ```bash
+     npx gh-pr-threads reply <id> "This suggestion would break X because Y. Keeping current implementation."
+     ```
+   - Then mark as skip:
+     ```bash
+     npx gh-pr-threads mark <id> skip
+     ```
 3. **If valid:**
    - Apply fix
-   - Resolve thread with optional reply:
+   - Resolve thread with reply explaining what was done:
      ```bash
-     npx gh-pr-threads resolve <id> --reply "Fixed in commit abc123"
-     # or just resolve without reply
-     npx gh-pr-threads resolve <id>
+     npx gh-pr-threads resolve <id> --reply "Fixed. Changed X to Y as suggested."
      ```
 
 ### 3. User Comments
