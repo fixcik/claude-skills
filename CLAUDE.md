@@ -90,7 +90,9 @@ Instructions for Claude in second person...
 **Important:**
 - Version should be updated ONCE per commit, not after each file change
 - **Testing is mandatory** - no skill should be committed without RED-GREEN-REFACTOR testing
+- **Test after ANY change** - even small edits require re-testing (see Iron Law in TESTING.md)
 - Document test results in `tests/observations.md`
+- **See [TESTING.md](./TESTING.md) for complete testing methodology**
 
 Note: There is NO registry.json in this repository (the validation workflow references it but it doesn't exist - this appears to be from a template).
 
@@ -145,6 +147,10 @@ git commit -m "chore: bump version to 1.1.0"
 
 ## Testing
 
+> **📖 Complete testing guide: [TESTING.md](./TESTING.md)**
+>
+> **⚠️ Critical:** Test after EVERY skill change, no exceptions.
+
 ### Automated Validation
 
 The GitHub Actions workflow (`.github/workflows/validate-skills.yml`) validates:
@@ -159,7 +165,21 @@ grep -A 5 "^---$" plugins/gh-skills/skills/your-skill/SKILL.md
 
 ### Skill Behavior Testing (Required)
 
-**All skills MUST be tested** using RED-GREEN-REFACTOR methodology before committing:
+**All skills MUST be tested** using RED-GREEN-REFACTOR methodology:
+- **Before initial commit** (new skill)
+- **After ANY modification** (edits to existing skills)
+
+**Iron Law: NO SKILL WITHOUT A FAILING TEST FIRST**
+
+This applies to:
+- New skills
+- Edits to existing skills
+- "Simple additions"
+- "Documentation updates"
+
+**No exceptions.** See [TESTING.md](./TESTING.md) for complete methodology.
+
+**Testing process:**
 
 1. **Create test scenarios** in `skills/your-skill/tests/scenarios.yml`:
    - Define pressure scenarios (time, authority, sunk-cost)
