@@ -1,172 +1,64 @@
 # Claude Skills Marketplace
 
-A centralized marketplace for [Claude Code](https://claude.ai/code) skills - install once, get all skills.
-
-## What are Claude Code Skills?
-
-Claude Code skills are specialized prompts that extend Claude's capabilities with domain-specific knowledge, workflows, and tool integrations. They help Claude provide more focused and effective assistance for specific tasks.
-
-**Works with:** [Claude Code](https://claude.ai/code) CLI and [Cursor](https://cursor.sh/) IDE
-
-📖 **Using skills in Cursor?** See [CURSOR.md](./CURSOR.md) for Cursor-specific instructions.
+Install once, get all skills. Works with [Claude Code](https://claude.ai/code) CLI and [Cursor](https://cursor.sh/) IDE.
 
 ## Installation
-
-Install the marketplace as a Claude Code plugin:
 
 ```bash
 claude plugin install https://github.com/fixcik/claude-skills
 ```
 
-That's it! All skills are now available.
-
 ## Usage
 
-After installing the plugin, all skills are automatically available:
-
 ```bash
-# Use any skill directly
 /pr-review-comments
-
-# Skills are invoked with /skill-name
 ```
 
-No need to install skills individually - you get the entire marketplace!
+That's it!
 
 ## Available Skills
 
 ### pr-review-comments
 
-Process GitHub PR review comments using gh-pr-threads. Extracts review threads, bot summaries (especially CodeRabbit nitpicks), and user comments for efficient PR review workflows.
-
-**Use when:**
-- Processing GitHub Pull Request review comments
-- Extracting reviewer feedback
-- Analyzing PR threads and discussions
+Process GitHub PR review comments, CodeRabbit nitpicks, and reviewer feedback.
 
 **Features:**
 - Fetches all review threads from a PR
-- Parses CodeRabbit nitpicks and suggestions
-- Tracks which comments have been addressed
-- Supports reply, resolve, and mark commands
+- Parses CodeRabbit nitpicks
+- Tracks addressed comments
+- Reply/resolve/mark commands
 
-[More details](./skills/pr-review-comments/SKILL.md)
+## Adding Skills
 
-## Contributing
+Want to contribute a skill?
 
-We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on:
-
-- Submitting new skills
-- Naming conventions
-- Skill structure requirements
-- Testing and validation
-
-## Skill Structure
-
-Each skill in the marketplace has the following structure:
-
-```
-skills/
-└── skill-name/
-    ├── SKILL.md              # Required: Skill metadata and content
-    ├── README.md             # Optional: Additional documentation
-    ├── scripts/              # Optional: Helper scripts
-    └── examples/             # Optional: Example usage
-```
-
-### SKILL.md Format
+1. Fork this repo
+2. Create `skills/your-skill-name/SKILL.md`:
 
 ```markdown
 ---
-name: skill-name
-description: Use when [trigger condition]. Brief description of what this skill does.
+name: your-skill-name
+description: Use when [trigger condition]
 ---
 
-[Skill content - detailed instructions for Claude]
+# Your instructions for Claude here
 ```
 
-## Registry
+3. Update `registry.json`
+4. Submit PR
 
-The marketplace maintains a `registry.json` with two types of skills:
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
-1. **Builtin skills** - Hosted in this repository under `skills/`
-2. **External skills** - Referenced from other GitHub repositories
+## Structure
 
-### registry.json Structure
-
-```json
-{
-  "version": "1.0.0",
-  "skills": {
-    "skill-name": {
-      "source": "builtin",
-      "version": "1.0.0",
-      "path": "skills/skill-name",
-      "description": "Brief description"
-    }
-  },
-  "external": {
-    "external-skill": {
-      "repo": "https://github.com/user/repo",
-      "path": "skills/external-skill",
-      "description": "Brief description"
-    }
-  }
-}
 ```
-
-## How It Works
-
-1. **Discovery**: `gh-skills search` reads `registry.json` to show available skills
-2. **Installation**: `gh-skills install <name>` copies skill from marketplace to `~/.claude/skills/`
-3. **Usage**: Claude Code automatically discovers skills in `~/.claude/skills/`
-4. **Invocation**: Use `/skill-name` in Claude Code to activate the skill
-
-## Roadmap
-
-- [x] Basic install/uninstall/list/search commands
-- [x] Builtin skills support
-- [ ] External skills installation from GitHub repos
-- [ ] Skill versioning and updates
-- [ ] Dependency management
-- [ ] Skill categories and tags
-- [ ] Community ratings and reviews
-- [ ] Auto-update notifications
-- [ ] `gh skills publish` for skill authors
-
-## FAQ
-
-### Where are skills installed?
-
-Skills are installed to `~/.claude/skills/` by default.
-
-### How do I use an installed skill?
-
-In Claude Code, use `/skill-name` to invoke the skill. For example: `/pr-review-comments`
-
-### Can I create my own skills?
-
-Yes! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines. You can:
-1. Add skills to your local `~/.claude/skills/` for personal use
-2. Submit a PR to add them to this marketplace for the community
-
-### What's the difference between builtin and external skills?
-
-- **Builtin skills**: Hosted in this repo, versioned with the marketplace
-- **External skills**: Referenced from other repos, maintained independently
-
-### How do I update a skill?
-
-Currently: `gh skills uninstall <name> && gh skills install <name>`
-
-Full update support with versioning is planned for a future release.
+claude-skills/
+├── plugins/gh-skills/      # Plugin that loads skills
+├── skills/                 # All skills here
+│   └── pr-review-comments/
+└── registry.json           # Skills catalog
+```
 
 ## License
 
 MIT
-
-## Links
-
-- [Claude Code Documentation](https://docs.anthropic.com/claude/docs)
-- [GitHub CLI](https://cli.github.com/)
-- [Submit an Issue](https://github.com/fixcik/claude-skills/issues)
