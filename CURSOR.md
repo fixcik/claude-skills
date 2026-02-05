@@ -20,7 +20,7 @@ Install skills using the marketplace CLI:
 
 ```bash
 # Clone marketplace
-git clone https://github.com/YOUR_USERNAME/claude-skills.git ~/projects/ai/claude-skills
+git clone https://github.com/fixcik/claude-skills.git ~/projects/ai/claude-skills
 
 # Install a skill
 cd ~/projects/ai/claude-skills

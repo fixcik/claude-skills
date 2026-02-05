@@ -1,0 +1,12 @@
+{
+  "name": "gh-skills",
+  "version": "1.0.0",
+  "description": "Claude Code skills marketplace with curated skills for GitHub PR reviews, development workflows, and more",
+  "author": {
+    "name": "fixcik"
+  },
+  "repository": "https://github.com/fixcik/claude-skills",
+  "license": "MIT",
+  "keywords": ["skills", "marketplace", "pr-review", "github", "development"],
+  "skills": "../../skills/"
+}

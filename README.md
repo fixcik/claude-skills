@@ -1,6 +1,6 @@
 # Claude Skills Marketplace
 
-A centralized marketplace for [Claude Code](https://claude.ai/code) skills with a GitHub CLI extension for easy management.
+A centralized marketplace for [Claude Code](https://claude.ai/code) skills - install once, get all skills.
 
 ## What are Claude Code Skills?
 
@@ -12,81 +12,26 @@ Claude Code skills are specialized prompts that extend Claude's capabilities wit
 
 ## Installation
 
-### Prerequisites
-
-- [GitHub CLI (`gh`)](https://cli.github.com/) (optional, for `gh skills` command)
-- `jq` for JSON parsing: `brew install jq` (macOS) or `apt-get install jq` (Linux)
-
-### Install the Marketplace
+Install the marketplace as a Claude Code plugin:
 
 ```bash
-# Clone the marketplace
-git clone https://github.com/YOUR_USERNAME/claude-skills.git ~/projects/ai/claude-skills
-
-# Test the CLI
-cd ~/projects/ai/claude-skills
-./gh-skills help
+claude plugin install https://github.com/fixcik/claude-skills
 ```
 
-### Link as GitHub CLI Extension (Optional)
-
-```bash
-# Create symlink in PATH
-sudo ln -s ~/projects/ai/claude-skills/gh-skills /usr/local/bin/gh-skills
-
-# Now you can use: gh skills <command>
-gh skills search
-```
-
-Or install as a proper gh extension:
-
-```bash
-gh extension install YOUR_USERNAME/gh-skills
-```
+That's it! All skills are now available.
 
 ## Usage
 
-### Search Available Skills
+After installing the plugin, all skills are automatically available:
 
 ```bash
-./gh-skills search
-# or with a query
-./gh-skills search review
+# Use any skill directly
+/pr-review-comments
+
+# Skills are invoked with /skill-name
 ```
 
-### Install a Skill
-
-```bash
-./gh-skills install pr-review-comments
-```
-
-Skills are installed to `~/.claude/skills/` and automatically discovered by Claude Code.
-
-### List Installed Skills
-
-```bash
-./gh-skills list
-```
-
-### Get Skill Info
-
-```bash
-./gh-skills info pr-review-comments
-```
-
-### Uninstall a Skill
-
-```bash
-./gh-skills uninstall pr-review-comments
-```
-
-### Update a Skill
-
-```bash
-./gh-skills update pr-review-comments
-```
-
-(Currently redirects to uninstall/reinstall workflow)
+No need to install skills individually - you get the entire marketplace!
 
 ## Available Skills
 
@@ -224,4 +169,4 @@ MIT
 
 - [Claude Code Documentation](https://docs.anthropic.com/claude/docs)
 - [GitHub CLI](https://cli.github.com/)
-- [Submit an Issue](https://github.com/YOUR_USERNAME/claude-skills/issues)
+- [Submit an Issue](https://github.com/fixcik/claude-skills/issues)

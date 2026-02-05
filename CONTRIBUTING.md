@@ -293,7 +293,7 @@ Pull requests automatically run validation checks:
 
 ## Need Help?
 
-- [Open an issue](https://github.com/YOUR_USERNAME/claude-skills/issues) with questions
+- [Open an issue](https://github.com/fixcik/claude-skills/issues) with questions
 - Check existing skills in `skills/` for examples
 - Read the [Claude Code documentation](https://docs.anthropic.com/claude/docs)
 
