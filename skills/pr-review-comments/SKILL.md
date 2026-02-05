@@ -42,7 +42,7 @@ For each comment:
 
 1. **Check code** - Is the issue fixed?
 2. **Propose fix** if needed
-3. **Draft reply** in English
+3. **Draft reply** in the same language as the comment
 4. **Get user confirmation** before sending
 
 Reply format:
@@ -52,7 +52,7 @@ Comment: [reviewer comment text]
 
 Status: [Fixed/Needs fix/Unclear]
 
-Proposed reply: "[Your English reply]"
+Proposed reply: "[Your reply in same language]"
 ```
 
 ### 3. Reply via GitHub CLI
@@ -72,7 +72,7 @@ npx gh-pr-threads clear
 
 1. **One at a time** - Never batch process multiple threads
 2. **Always confirm** before changing code or sending replies
-3. **English replies** - All GitHub responses in English
+3. **Match language** - Reply in the same language as the comment
 4. **Check code first** - Verify issue status before replying
 5. **Use the CLI** - Don't write custom GraphQL queries
 
