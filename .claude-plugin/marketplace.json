@@ -9,7 +9,7 @@
       "name": "gh-skills",
       "source": "./plugins/gh-skills",
       "description": "Claude Code skills marketplace with curated skills for GitHub PR reviews, development workflows, and more",
-      "version": "1.0.0"
+      "version": "1.1.0"
     }
   ]
 }

@@ -1,0 +1,187 @@
+# Test Scenarios for pr-review-comments skill
+# These scenarios test whether agents correctly handle different types of PR comments
+
+scenarios:
+  - name: reviewer-question-about-logic
+    type: discipline
+    pressure:
+      - time-constraint
+      - sunk-cost
+    setup: |
+      User: "Process this PR review comment"
+
+      Thread #42 from @senior-dev:
+      "Why did you choose to validate before the database transaction instead of using
+      database constraints? Wouldn't constraints be more reliable?"
+
+      File: src/api/users.ts:145
+
+    expected_without_skill:
+      behaviors:
+        - May resolve the thread immediately after replying
+        - May give generic answer without technical reasoning
+        - May not check the code to understand context
+      rationalizations:
+        - "I answered, so I should resolve it"
+        - "The question is simple, no need to leave it open"
+        - "Resolving keeps things tidy"
+
+    expected_with_skill:
+      behaviors:
+        - Reads the code to understand validation logic
+        - Drafts answer with technical reasoning
+        - Shows draft to user for confirmation
+        - Uses reply (not resolve)
+        - Explicitly states "let reviewer close thread"
+      success_criteria:
+        - Does NOT resolve the thread
+        - Provides technical justification
+        - Gets user confirmation before sending
+
+  - name: multiple-options-suggested
+    type: technique
+    pressure:
+      - authority (senior reviewer)
+      - time-constraint
+    setup: |
+      User: "Handle this review comment"
+
+      Thread #15 from @tech-lead:
+      "For error handling here, you could either:
+      A) Use try-catch with async/await
+      B) Use .catch() with promises
+      Either works, what do you think?"
+
+      File: src/services/api.ts:78
+      Reactions: 👀 by user
+
+    expected_without_skill:
+      behaviors:
+        - May ask user to choose without analysis
+        - May choose randomly without reasoning
+        - May not explain trade-offs
+      rationalizations:
+        - "Both are equivalent, user should decide"
+        - "I'll just pick one, doesn't matter"
+        - "No need to over-explain"
+
+    expected_with_skill:
+      behaviors:
+        - Checks existing codebase patterns
+        - Analyzes both options (performance, maintainability, consistency)
+        - Recommends option with technical reasoning
+        - Shows analysis to user
+        - Explains WHY chosen option is better
+        - Mentions the reaction (👀 = high priority)
+      success_criteria:
+        - Provides technical justification
+        - References existing codebase patterns
+        - Explains trade-offs
+
+  - name: high-priority-reaction
+    type: technique
+    pressure:
+      - multiple-threads (10+ threads total)
+    setup: |
+      User: "Process PR review comments"
+
+      Threads:
+      #5: Minor style suggestion (no reactions)
+      #12: Question about naming (no reactions)
+      #23: Security concern (reactions: 🚀 👀 ❤️ by user)
+      #34: Typo fix (no reactions)
+
+    expected_without_skill:
+      behaviors:
+        - Processes threads in order (5, 12, 23, 34)
+        - May not notice reactions
+        - Treats all threads equally
+      rationalizations:
+        - "I'll process them in order"
+        - "Reactions don't matter"
+        - "Lower ID = older = higher priority"
+
+    expected_with_skill:
+      behaviors:
+        - Identifies thread #23 has priority reactions
+        - Processes #23 first
+        - Explicitly mentions reactions when presenting
+        - Shows priority analysis to user
+      success_criteria:
+        - Handles #23 before others
+        - Mentions "🚀 👀 ❤️ reactions indicate high priority"
+        - Asks user if this priority is correct
+
+  - name: bot-invalid-suggestion
+    type: technique
+    pressure:
+      - authority (bot suggestion)
+      - batch-processing (many nitpicks)
+    setup: |
+      User: "Handle CodeRabbit suggestions"
+
+      Thread #8 from @coderabbitai:
+      "Consider adding type annotation to this parameter for better type safety"
+
+      File: src/utils/helpers.ts:42
+      Code: function process(data) { ... }
+
+      Context: This is JavaScript file, not TypeScript. Project uses JSDoc for types.
+
+    expected_without_skill:
+      behaviors:
+        - May apply suggestion without validation
+        - May not check if suggestion is valid
+        - Trusts bot suggestion blindly
+      rationalizations:
+        - "Bot knows best"
+        - "It's a suggestion, must be valid"
+        - "Faster to just apply it"
+
+    expected_with_skill:
+      behaviors:
+        - Checks file type (.js vs .ts)
+        - Recognizes suggestion doesn't apply
+        - Explains to user WHY invalid
+        - Drafts reply explaining reasoning
+        - Marks as skip (not done)
+      success_criteria:
+        - Does NOT blindly apply suggestion
+        - Explains technical reason for rejection
+        - Uses appropriate command (mark skip, not done)
+
+  - name: batch-similar-nitpicks
+    type: efficiency
+    pressure:
+      - volume (15 similar nitpicks)
+    setup: |
+      User: "Process these CodeRabbit nitpicks"
+
+      15 nitpicks all saying: "Add semicolon at end of line"
+      IDs: 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115
+
+    expected_without_skill:
+      behaviors:
+        - May mark them one by one
+        - May use 15 separate commands
+      rationalizations:
+        - "I'll process each carefully"
+        - "Safer to do individually"
+
+    expected_with_skill:
+      behaviors:
+        - Recognizes they're all similar
+        - Uses single batch command
+        - Mentions batch efficiency to user
+      success_criteria:
+        - Uses: npx gh-pr-threads mark done 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115
+        - Not 15 separate commands
+
+pressure_types:
+  time-constraint: "User mentions deadline or urgent need"
+  sunk-cost: "After spending time on implementation"
+  authority: "Comment from senior/lead developer"
+  exhaustion: "After processing many threads"
+  batch-processing: "Many similar items to process"
+  multiple-threads: "10+ threads need attention"
+  volume: "Large number of items"
