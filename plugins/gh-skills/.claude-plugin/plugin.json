@@ -8,5 +8,5 @@
   "repository": "https://github.com/fixcik/claude-skills",
   "license": "MIT",
   "keywords": ["skills", "marketplace", "pr-review", "github", "development"],
-  "skills": "../../skills/"
+  "skills": "./skills/"
 }

@@ -80,10 +80,11 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 ```
 claude-skills/
 ├── .claude-plugin/
-│   └── marketplace.json    # Marketplace manifest
-├── plugins/gh-skills/      # Plugin that loads skills
-└── skills/                 # All skills here
-    └── pr-review-comments/
+│   └── marketplace.json         # Marketplace manifest
+└── plugins/gh-skills/           # Plugin with skills
+    ├── .claude-plugin/plugin.json
+    └── skills/
+        └── pr-review-comments/  # Skills inside plugin
 ```
 
 ## Uninstall
