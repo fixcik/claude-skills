@@ -9,99 +9,172 @@ Process GitHub Pull Request review comments using `gh-pr-threads` CLI tool.
 
 ## When to Use
 
-Trigger this skill when user wants to:
+Trigger when user wants to:
 - Extract PR review comments
 - Check reviewer feedback
 - Process CodeRabbit nitpicks
 - Analyze unresolved threads
 - Handle PR review feedback
 
-## Workflow
-
-### 1. Extract Comments
+## Setup
 
 ```bash
-# Auto-detect PR in current directory
+# Verify GitHub CLI is authenticated
+gh auth status
+
+# Fetch PR threads (auto-detects PR in current dir)
 npx gh-pr-threads
 
 # Or specify PR URL
 npx gh-pr-threads https://github.com/owner/repo/pull/123
-
-# Only user comments (exclude bots)
-npx gh-pr-threads <PR_URL> --only=threads --ignore-bots
-
-# CodeRabbit nitpicks
-npx gh-pr-threads <PR_URL> --only=nitpicks
 ```
 
-### 2. Process One at a Time
+## Decision Flow
 
-**CRITICAL: Process only ONE thread or nitpick at a time.**
+**CRITICAL: Process ONE item at a time. Never batch process.**
 
-For each comment:
+For each thread/nitpick, identify the source and follow the appropriate workflow:
 
-1. **Check code** - Is the issue fixed?
-2. **Propose fix** if needed
-3. **Draft reply** in the same language as the comment
-4. **Get user confirmation** before sending
-
-Reply format:
-```
-Thread: [path]:[line]
-Comment: [reviewer comment text]
-
-Status: [Fixed/Needs fix/Unclear]
-
-Proposed reply: "[Your reply in same language]"
-```
-
-### 3. Reply via GitHub CLI
+### 1. Nitpicks (CodeRabbit suggestions)
 
 ```bash
-gh pr comment <PR_URL> --body "Fixed in commit abc123"
+# Get nitpicks
+npx gh-pr-threads --only=nitpicks
 ```
 
-### 4. Clear State (if needed)
+**Flow:**
+1. **Review suggestion** - Is it valid?
+2. **If valid** → Apply fix
+3. **Mark as processed:**
+   ```bash
+   npx gh-pr-threads mark <id> done
+   # or
+   npx gh-pr-threads mark <id> skip
+   ```
+
+**No need to reply or resolve** - just mark.
+
+### 2. Bot Comments (non-nitpick)
 
 ```bash
-# Clear marked items for current PR
+# Get bot threads
+npx gh-pr-threads --only=threads
+```
+
+**Flow:**
+1. **Analyze carefully** - Bot suggestions may be incorrect
+2. **If invalid** → Explain why to user, mark as skip
+3. **If valid:**
+   - Apply fix
+   - Resolve thread with optional reply:
+     ```bash
+     npx gh-pr-threads resolve <id> --reply "Fixed in commit abc123"
+     # or just resolve without reply
+     npx gh-pr-threads resolve <id>
+     ```
+
+### 3. User Comments
+
+```bash
+# Get only user threads (exclude bots)
+npx gh-pr-threads --only=threads --ignore-bots
+```
+
+**Flow:**
+1. **Check code** - Is issue already fixed?
+2. **Analyze validity** - Is the comment correct?
+3. **If needs fix:**
+   - Apply fix
+   - Draft reply in same language as comment
+   - Get user confirmation
+   - Send reply and resolve:
+     ```bash
+     npx gh-pr-threads resolve <id> --reply "Fixed. Changed X to Y as suggested."
+     ```
+4. **If already fixed:**
+   - Draft reply confirming fix
+   - Get user confirmation
+   - Send and resolve:
+     ```bash
+     npx gh-pr-threads resolve <id> --reply "Already fixed in commit abc123"
+     ```
+5. **If unclear/invalid:**
+   - Ask user for clarification
+   - Present options: reply for clarification / skip / mark invalid
+
+## Commands Reference
+
+```bash
+# Reply to thread
+npx gh-pr-threads reply <id> "Your message"
+
+# Resolve thread (optionally with reply)
+npx gh-pr-threads resolve <id>
+npx gh-pr-threads resolve <id> --reply "Fixed in abc123"
+
+# Mark without changing thread state
+npx gh-pr-threads mark <id> done
+npx gh-pr-threads mark <id> skip
+npx gh-pr-threads mark <id> later --note "Need to discuss"
+
+# Clear all marked items
 npx gh-pr-threads clear
+```
+
+## Reply Format Template
+
+When drafting replies, present this to user:
+
+```
+Thread: <file>:<line>
+Comment: "<original comment text>"
+
+Status: [Fixed/Already fixed/Needs discussion]
+
+Proposed reply: "<your reply in same language as comment>"
+
+Actions:
+[ ] Apply code changes (if needed)
+[ ] Send reply: npx gh-pr-threads resolve <id> --reply "..."
 ```
 
 ## Key Rules
 
-1. **One at a time** - Never batch process multiple threads
-2. **Always confirm** before changing code or sending replies
-3. **Match language** - Reply in the same language as the comment
+1. **One at a time** - Process only ONE thread per interaction
+2. **Always confirm** - Get user approval before:
+   - Changing code
+   - Sending replies
+   - Resolving threads
+3. **Match language** - Reply in same language as comment
 4. **Check code first** - Verify issue status before replying
-5. **Use the CLI** - Don't write custom GraphQL queries
+5. **Use the tool** - Don't use `gh api` or write custom scripts
+6. **Bot skepticism** - Validate bot suggestions carefully
 
-## When Comment is Unclear
+## Common Patterns
 
-If reviewer comment is confusing:
+**Nitpick fixed:**
+```bash
+npx gh-pr-threads mark <id> done
+```
 
-1. Present options to user:
-   - Reply asking for clarification
-   - Skip for now
-   - Mark as invalid
-   - Custom action
+**Bot suggestion fixed:**
+```bash
+npx gh-pr-threads resolve <id> --reply "Applied suggestion"
+```
 
-2. Get user's decision before proceeding
+**User comment fixed:**
+```bash
+npx gh-pr-threads resolve <id> --reply "Fixed. Changed implementation as suggested."
+```
+
+**Need clarification:**
+```bash
+npx gh-pr-threads reply <id> "Could you clarify what you mean by X?"
+# Don't resolve - leave open for discussion
+```
 
 ## Requirements
 
-- **GitHub CLI (`gh`)** installed and authenticated
+- **GitHub CLI (`gh`)** authenticated
 - **Node.js >= 18**
-- Verify: `gh auth status`
-- Install: `npx gh-pr-threads` (auto-installs)
-
-## Common Commands
-
-| Task | Command |
-|------|---------|
-| Get unresolved | `npx gh-pr-threads <PR_URL>` |
-| Auto-detect PR | `npx gh-pr-threads` |
-| Only threads | `npx gh-pr-threads <PR_URL> --only=threads` |
-| Exclude bots | `npx gh-pr-threads <PR_URL> --ignore-bots` |
-| Get nitpicks | `npx gh-pr-threads <PR_URL> --only=nitpicks` |
-| Clear state | `npx gh-pr-threads clear` |
+- Tool installs automatically: `npx gh-pr-threads`
