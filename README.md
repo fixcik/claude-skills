@@ -44,8 +44,7 @@ description: Use when [trigger condition]
 # Your instructions for Claude here
 ```
 
-3. Update `registry.json`
-4. Submit PR
+3. Submit PR
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
@@ -53,10 +52,11 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ```
 claude-skills/
+├── .claude-plugin/
+│   └── marketplace.json    # Marketplace manifest
 ├── plugins/gh-skills/      # Plugin that loads skills
-├── skills/                 # All skills here
-│   └── pr-review-comments/
-└── registry.json           # Skills catalog
+└── skills/                 # All skills here
+    └── pr-review-comments/
 ```
 
 ## License

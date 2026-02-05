@@ -27,21 +27,7 @@
    3. Finally this
    ```
 
-4. **Update** `registry.json`:
-   ```json
-   {
-     "skills": {
-       "your-skill-name": {
-         "source": "builtin",
-         "version": "1.0.0",
-         "path": "skills/your-skill-name",
-         "description": "Same as SKILL.md description"
-       }
-     }
-   }
-   ```
-
-5. **Submit** Pull Request
+4. **Submit** Pull Request
 
 ## Guidelines
 
