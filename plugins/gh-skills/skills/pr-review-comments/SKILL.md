@@ -32,9 +32,35 @@ npx gh-pr-threads https://github.com/owner/repo/pull/123
 npx gh-pr-threads --thread <id>
 ```
 
-## Decision Flow
+## Batch Operations
 
-**CRITICAL: Process ONE item at a time. Never batch process.**
+For processing multiple items efficiently, use batch commands:
+
+### Batch mark (most common)
+```bash
+# Mark multiple items with same status
+npx gh-pr-threads mark done <id1> <id2> <id3>
+npx gh-pr-threads mark skip <id1> <id2> --note "Out of scope"
+```
+
+### Batch resolve (threads only)
+```bash
+# Resolve multiple threads with same reply
+npx gh-pr-threads resolve <id1> <id2> --reply "Fixed in commit abc123"
+```
+
+### Batch reply (threads only)
+```bash
+# Reply to multiple threads with same message
+npx gh-pr-threads reply "Acknowledged, will address in follow-up PR" <id1> <id2>
+```
+
+**When to use batch:**
+- All nitpicks from same category (e.g., style fixes)
+- Multiple threads with identical response
+- Marking items you've already processed
+
+## Decision Flow
 
 For each thread/nitpick, identify the source and follow the appropriate workflow:
 
@@ -50,9 +76,9 @@ npx gh-pr-threads --only=nitpicks
 2. **If valid** → Apply fix
 3. **Mark as processed:**
    ```bash
-   npx gh-pr-threads mark <id> done
-   # or
-   npx gh-pr-threads mark <id> skip
+   npx gh-pr-threads mark done <id>
+   # or with multiple IDs:
+   npx gh-pr-threads mark done <id1> <id2> <id3>
    ```
 
 **No need to reply or resolve** - just mark.
@@ -70,11 +96,11 @@ npx gh-pr-threads --only=threads
    - Explain to user why suggestion is incorrect
    - Reply explaining the reasoning:
      ```bash
-     npx gh-pr-threads reply <id> "This suggestion would break X because Y. Keeping current implementation."
+     npx gh-pr-threads reply "This suggestion would break X because Y. Keeping current implementation." <id>
      ```
    - Then mark as skip:
      ```bash
-     npx gh-pr-threads mark <id> skip
+     npx gh-pr-threads mark skip <id>
      ```
 3. **If valid:**
    - Apply fix
@@ -118,17 +144,19 @@ npx gh-pr-threads --only=threads --ignore-bots
 # Get specific thread by ID
 npx gh-pr-threads --thread <id>
 
-# Reply to thread
-npx gh-pr-threads reply <id> "Your message"
+# Reply to thread(s)
+npx gh-pr-threads reply "Your message" <id>
+npx gh-pr-threads reply "Your message" <id1> <id2>
 
-# Resolve thread (optionally with reply)
+# Resolve thread(s) (optionally with reply)
 npx gh-pr-threads resolve <id>
-npx gh-pr-threads resolve <id> --reply "Fixed in abc123"
+npx gh-pr-threads resolve <id1> <id2> --reply "Fixed in abc123"
 
-# Mark without changing thread state
-npx gh-pr-threads mark <id> done
-npx gh-pr-threads mark <id> skip
-npx gh-pr-threads mark <id> later --note "Need to discuss"
+# Mark thread(s)/nitpick(s)
+npx gh-pr-threads mark done <id>
+npx gh-pr-threads mark done <id1> <id2> <id3>
+npx gh-pr-threads mark skip <id>
+npx gh-pr-threads mark later <id> --note "Need to discuss"
 
 # Clear all marked items
 npx gh-pr-threads clear
@@ -158,21 +186,21 @@ Actions:
 
 ## Key Rules
 
-1. **One at a time** - Process only ONE thread per interaction
+1. **Batch for efficiency** - Use batch commands for similar items
 2. **Always confirm** - Get user approval before:
    - Changing code
    - Sending replies
    - Resolving threads
 3. **Match language** - Reply in same language as comment
 4. **Check code first** - Verify issue status before replying
-5. **Use the tool** - Don't use `gh api` or write custom scripts
+5. **Use the CLI** - Never write custom scripts, use batch commands
 6. **Bot skepticism** - Validate bot suggestions carefully
 
 ## Common Patterns
 
-**Nitpick fixed:**
+**Nitpicks fixed (batch):**
 ```bash
-npx gh-pr-threads mark <id> done
+npx gh-pr-threads mark done <id1> <id2> <id3>
 ```
 
 **Bot suggestion fixed:**
@@ -189,8 +217,13 @@ npx gh-pr-threads resolve <id> --reply "Refactored error handling to throw custo
 
 **Need clarification:**
 ```bash
-npx gh-pr-threads reply <id> "Could you clarify what you mean by X?"
+npx gh-pr-threads reply "Could you clarify what you mean by X?" <id>
 # Don't resolve - leave open for discussion
+```
+
+**Multiple threads with same response:**
+```bash
+npx gh-pr-threads resolve <id1> <id2> <id3> --reply "Fixed in commit abc123"
 ```
 
 ## Requirements
