@@ -27,6 +27,9 @@ npx gh-pr-threads
 
 # Or specify PR URL
 npx gh-pr-threads https://github.com/owner/repo/pull/123
+
+# View specific thread by ID
+npx gh-pr-threads --thread <id>
 ```
 
 ## Decision Flow
@@ -105,6 +108,9 @@ npx gh-pr-threads --only=threads --ignore-bots
 ## Commands Reference
 
 ```bash
+# Get specific thread by ID
+npx gh-pr-threads --thread <id>
+
 # Reply to thread
 npx gh-pr-threads reply <id> "Your message"
 
